@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# CMake files
+build/
+
+# Test coverage output
+Coverage
