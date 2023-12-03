@@ -12,6 +12,8 @@ file(GLOB SOURCES
     Data/PlayField.cpp
     Data/PlayFieldLocation.cpp
     Data/PlayFieldSquare.cpp
+    Data/Session.cpp
+    Data/SessionStore.cpp
     Data/Tile.cpp
     Data/TilesCollection.cpp
 )

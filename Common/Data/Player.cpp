@@ -7,7 +7,6 @@ using namespace DutchFeud::Common::Data;
 
 Player::Player()
 {
-
 }
 
 const std::string &

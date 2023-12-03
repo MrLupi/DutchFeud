@@ -1,15 +1,15 @@
 #include <iostream>
 
-#include "WebServer/Socket.h"
+#include "FeudServer.h"
 
-using namespace DutchFeud::Webserver;
+using namespace DutchFeud;
 
 int
 main( int , char ** ) 
 {   
-    auto sock = Socket( 8080 );
+    auto server = DutchFeud::Server::FeudServer();
 
-    sock.Start();
+    server.Start();
 
     return 0;
 }
