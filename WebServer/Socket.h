@@ -31,7 +31,6 @@ namespace DutchFeud::Webserver
         public:
         Socket( int port );
         void Start();
-        void PrintInfo();
 
         private:
         void SetState( SocketState state );
@@ -43,5 +42,7 @@ namespace DutchFeud::Webserver
         void Accept();
         void Close();
         void CleanUp();
+
+        virtual void HandleNewConnection( int clientFileDescriptor ) = 0;
     };
 }

@@ -4,6 +4,7 @@ project(webserver CXX)
 
 file(GLOB SOURCES 
     Socket.cpp
+    Rest.cpp
 )
 
 include_directories(../../)

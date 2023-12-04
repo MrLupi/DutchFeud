@@ -4,12 +4,12 @@ using namespace DutchFeud;
 using namespace DutchFeud::Server;
 
 FeudServer::FeudServer()
-    : _socket( 8080 )
+    : _rest( 8080 )
 {
 }
 
 void
 FeudServer::Start()
 {
-    _socket.Start();
+    _rest.Start();
 }

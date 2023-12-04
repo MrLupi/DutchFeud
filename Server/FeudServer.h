@@ -3,7 +3,7 @@
 #include "Common/Data/PlayerStore.h"
 #include "Common/Data/GameStore.h"
 #include "Common/Data/SessionStore.h"
-#include "WebServer/Socket.h"
+#include "WebServer/Rest.h"
 
 namespace DutchFeud::Server
 {
@@ -14,7 +14,7 @@ namespace DutchFeud::Server
         Common::Data::GameStore _gameStore;
         Common::Data::SessionStore _sessionStore;
 
-        Webserver::Socket _socket;
+        Webserver::Rest _rest;
 
 
     public:
