@@ -4,6 +4,7 @@ project(webserver CXX)
 
 file(GLOB SOURCES 
     Socket.cpp
+    ThreadPool.cpp
     Rest.cpp
 )
 

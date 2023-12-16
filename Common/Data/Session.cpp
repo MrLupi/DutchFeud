@@ -6,6 +6,7 @@ using namespace DutchFeud::Common::Data;
 
 
 Session::Session()
+    : _oPlayer( std::nullopt )
 {
 
 }

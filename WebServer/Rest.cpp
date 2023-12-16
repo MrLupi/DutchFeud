@@ -2,6 +2,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <functional>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -17,23 +18,43 @@ using namespace DutchFeud::Webserver;
 
 Rest::Rest( int port )
     : Socket( port )
+    , _connectHandler( std::nullopt )
+    , _disconnectHandler( std::nullopt )
+    , _routes()
 {
-
 }
+
+void
+Rest::RegisterConnectHandler( const ConnectionHandler & handler )
+{
+    _connectHandler = handler;
+}
+
+void
+Rest::RegisterDisconnectHandler( const ConnectionHandler & handler )
+{
+    _connectHandler = handler;
+}
+
+void
+Rest::RegisterFeudHandler( const std::string & path, RouteHandler & handler )
+{
+    _routes[ path ] = handler;
+}
+
 
 
 void
 Rest::HandleNewConnection( int clientFileDescriptor )
 {
-
-    const char *body = "<html><body><h1>Hello World!</h1></body></html>";
+    const char *body = "[{\"id\":\"935847\"}]";
 
     // Calculate Content-Length
     size_t contentLength = strlen( body );
 
     // Create the HTTP response header
     char header[1024];
-    snprintf( header, sizeof( header ), "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %zu\r\n\r\n", contentLength );
+    snprintf( header, sizeof( header ), "HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: %zu\r\n\r\n", contentLength );
 
     // Concatenate header and body to form the complete HTTP response
     char responseBuffer[10240];

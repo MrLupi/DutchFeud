@@ -8,8 +8,12 @@ FeudServer::FeudServer()
 {
 }
 
+
+
 void
 FeudServer::Start()
 {
+    // _rest.RegisterHandler( "/", std::bind( &FeudServer::HandleIndexRequest, this ) );
+    // _rest.RegisterHandler( "/feud", std::bind( &FeudServer::HandleFeudRequest, this ) );
     _rest.Start();
 }
