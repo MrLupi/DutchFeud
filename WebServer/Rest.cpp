@@ -45,9 +45,19 @@ Rest::RegisterFeudHandler( const std::string & path, RouteHandler & handler )
 
 
 void
-Rest::HandleNewConnection( int clientFileDescriptor )
+Rest::HandleNewConnection( ConnectionData connectionData )
 {
-    const char *body = "[{\"id\":\"935847\"}]";
+    if ( !_connectHandler.has_value() )
+    {
+        // ToDo: Log
+        return;
+    }
+
+    auto x = _connectHandler.value().get();
+    x( connectionData );
+    
+   std::string bodyStr = "[{\"ip\":\"" + connectionData.Host + "\"}]";
+    const char * body = bodyStr.c_str();
 
     // Calculate Content-Length
     size_t contentLength = strlen( body );
@@ -70,7 +80,7 @@ Rest::HandleNewConnection( int clientFileDescriptor )
     {
         memset( clientBuffer, '\0', sizeof( clientBuffer ) );
 
-        int n = recv( clientFileDescriptor, clientBuffer, 10240, 0 );
+        int n = recv( connectionData.ClientFileDescriptor, clientBuffer, 10240, 0 );
         printf( "n = %d\n\n", n );
 
         if ( n < 1 )
@@ -110,6 +120,6 @@ Rest::HandleNewConnection( int clientFileDescriptor )
         printf( "The route is: %s\n", route );
 
         // Send the HTTP response to the client
-        send( clientFileDescriptor, responseBuffer, strlen( responseBuffer ), 0 );
+        send(  connectionData.ClientFileDescriptor, responseBuffer, strlen( responseBuffer ), 0 );
     }
 }

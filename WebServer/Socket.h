@@ -4,6 +4,12 @@
 
 namespace DutchFeud::Webserver
 {
+    struct ConnectionData
+    {
+        int ClientFileDescriptor;
+        std::string Host;
+    };
+
     class Socket
     {
         public:
@@ -43,6 +49,6 @@ namespace DutchFeud::Webserver
         void Close();
         void CleanUp();
 
-        virtual void HandleNewConnection( int clientFileDescriptor ) = 0;
+        virtual void HandleNewConnection( ConnectionData connectionData ) = 0;
     };
 }

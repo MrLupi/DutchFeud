@@ -3,24 +3,19 @@
 #include <functional>
 #include <optional>
 
+#include "RestSession.h"
 #include "Socket.h"
 
 namespace DutchFeud::Webserver
 {
-    struct ConnectionData
-    {
-        int ClientFileDescriptor;
-        std::string Host;
-    };
-
     enum class Method
     {
         GET,
         POST
     };
 
-    typedef std::function < void ( ConnectionData ) > ConnectionHandler;
-    typedef std::function < void ( std::string &, Method ) > RouteHandler;
+    typedef std::function < RestSession & ( ConnectionData ) > ConnectionHandler;
+    typedef std::function < void ( RestSession, std::string &, Method ) > RouteHandler;
 
     class Rest : public Socket
     {
@@ -41,6 +36,6 @@ namespace DutchFeud::Webserver
 
 
     private:
-        void HandleNewConnection( int clientFileDescriptor ) override;        
+        void HandleNewConnection( ConnectionData connectionData ) override;        
     };
 }

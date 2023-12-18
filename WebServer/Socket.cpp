@@ -174,7 +174,18 @@ void Socket::Accept()
         return;
     }
 
-    HandleNewConnection( clientFileDescriptor );
+    struct sockaddr_in* pV4Addr = (struct sockaddr_in*) & clientaddress;
+    struct in_addr ipAddr = pV4Addr->sin_addr;
+    
+    char ipAddress[INET_ADDRSTRLEN];
+    
+    inet_ntop( AF_INET, &ipAddr, ipAddress, INET_ADDRSTRLEN );
+    
+    auto connectionData = ConnectionData();
+    connectionData.ClientFileDescriptor = clientFileDescriptor;
+    connectionData.Host = ipAddress;
+
+    HandleNewConnection( connectionData );
 
 
     SetState( SocketState::Closing );

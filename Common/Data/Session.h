@@ -5,16 +5,17 @@
 #include <optional>
 
 #include "Common/Data/Player.h"
+#include "WebServer/RestSession.h"
 
 namespace DutchFeud::Common::Data
 {
-    class Session
+    class Session : public Webserver::RestSession
     {
     private:
         std::optional< std::reference_wrapper< Player > > _oPlayer;
 
     public:
-        Session();
+        Session( std::string ipAddress, int clientFileDescriptor );
     };
     
 
