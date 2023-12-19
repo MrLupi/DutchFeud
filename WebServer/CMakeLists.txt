@@ -6,6 +6,7 @@ file(GLOB SOURCES
     Socket.cpp
     ThreadPool.cpp
     Rest.cpp
+    RestSession.cpp
 )
 
 include_directories(../../)

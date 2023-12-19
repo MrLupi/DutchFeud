@@ -25,10 +25,11 @@ Rest::Rest( int port )
 }
 
 void
-Rest::RegisterConnectHandler( const ConnectionHandler & handler )
+Rest::RegisterConnectHandler( ConnectionHandler handler )
 {
     _connectHandler = handler;
 }
+
 
 void
 Rest::RegisterDisconnectHandler( const ConnectionHandler & handler )
@@ -53,8 +54,7 @@ Rest::HandleNewConnection( ConnectionData connectionData )
         return;
     }
 
-    auto x = _connectHandler.value().get();
-    x( connectionData );
+    _connectHandler.value().get()( connectionData );
     
    std::string bodyStr = "[{\"ip\":\"" + connectionData.Host + "\"}]";
     const char * body = bodyStr.c_str();

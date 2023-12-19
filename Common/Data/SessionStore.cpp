@@ -9,3 +9,9 @@ SessionStore::SessionStore()
 {
 
 }
+
+void
+SessionStore::AddSession( std::shared_ptr< Session > sessionPtr )
+{
+    _sessionIdSessionMap[ sessionPtr->getGuid() ] = sessionPtr;
+}

@@ -15,10 +15,10 @@ FeudServer::FeudServer()
 }
 
 Webserver::RestSession &
-HandleNewConnection( Webserver::ConnectionData connectionData )
+FeudServer::HandleNewConnection( Webserver::ConnectionData connectionData )
 {
     auto session = std::make_shared< Common::Data::Session >( connectionData.Host, connectionData.ClientFileDescriptor );
-    
+    _sessionStore.AddSession( session );
 
 
     return * session;
@@ -31,6 +31,7 @@ FeudServer::Start()
 {
     // _rest.RegisterHandler( "/", std::bind( &FeudServer::HandleIndexRequest, this ) );
     // _rest.RegisterHandler( "/feud", std::bind( &FeudServer::HandleFeudRequest, this ) );
-    _rest.RegisterConnectHandler( HandleNewConnection );
+    _rest.RegisterConnectHandler( std::bind( & FeudServer::HandleNewConnection, this, std::placeholders::_1 ) );
+
     _rest.Start();
 }

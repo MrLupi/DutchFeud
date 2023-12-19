@@ -19,7 +19,7 @@ namespace DutchFeud::Server
 
     public:
         FeudServer();
-
         void Start();
+        Webserver::RestSession & HandleNewConnection( Webserver::ConnectionData connectionData );
     };
 }

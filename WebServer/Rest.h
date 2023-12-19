@@ -29,7 +29,7 @@ namespace DutchFeud::Webserver
 
         void Stop();
     
-        void RegisterConnectHandler( const ConnectionHandler & handler );
+        void RegisterConnectHandler( ConnectionHandler handler );
         void RegisterDisconnectHandler( const ConnectionHandler & handler );
 
         void RegisterFeudHandler( const std::string & path, RouteHandler & handler );
