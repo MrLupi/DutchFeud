@@ -14,6 +14,11 @@ Session::Session( std::string ipAddress, int clientFileDescriptor )
     _guid = Algo::GenerateRandomGuid()();
 }
 
+Session::~Session()
+{
+    
+}
+
 const std::string &
 Session::getGuid() const
 {

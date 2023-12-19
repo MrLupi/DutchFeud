@@ -40,7 +40,7 @@ Rest::RegisterDisconnectHandler( const ConnectionHandler & handler )
 }
 
 void
-Rest::RegisterFeudHandler( const std::string & path, RouteHandler & handler )
+Rest::RegisterFeudHandler( const std::string & path, RouteHandler handler )
 {
     _routes[ path ] = handler;
 }
@@ -55,54 +55,29 @@ Rest::HandleNewConnection( ConnectionData connectionData )
         // ToDo: Log
         return;
     }
-
-    _connectHandler.value().get()( connectionData );
     
-   std::string bodyStr = "[{\"ip\":\"" + connectionData.Host + "\"}]";
-    const char * body = bodyStr.c_str();
-
-    // Calculate Content-Length
-    size_t contentLength = strlen( body );
-
-    // Create the HTTP response header
-    auto headerBuilder = Algo::HeaderBuilder( 200 );
-    headerBuilder.SetContentType( "application/json; charset=utf-8" );
-    headerBuilder.SetContentLength( contentLength );
+    auto & connectHandler = _connectHandler.value();
+    auto & restSession = connectHandler( connectionData );
     
-    auto header = headerBuilder.BuildHeader().c_str();    
-
-    // Concatenate header and body to form the complete HTTP response
-    char responseBuffer[10240];
-    memset( responseBuffer, '\0', sizeof( responseBuffer ) );
-    strcat( responseBuffer, header );
-    strcat( responseBuffer, body );
-
+    int n = 0;
     char clientBuffer[10240];
 
-    int n = 0;
-
-    while ( n > -1 )
+    do
     {
+        int returnCode = 999;
         memset( clientBuffer, '\0', sizeof( clientBuffer ) );
-
         int n = recv( connectionData.ClientFileDescriptor, clientBuffer, 10240, 0 );
-        printf( "n = %d\n\n", n );
 
         if ( n < 1 )
         {
-            break;
+            // todo: log state
+            break;            
         }
 
-        printf( "%s\n\n", clientBuffer );
-
-        char *method = nullptr;
-        char *route = nullptr;
-
-        char *clientHttpHeader = strtok( clientBuffer, "\r\n" );
-
-        printf( "%s\n\n", clientHttpHeader );
-
-        char *headerToken = strtok( clientHttpHeader, " " );
+        char *  methodStr = nullptr;
+        char *  route = nullptr;
+        char *  clientHttpHeader = strtok( clientBuffer, "\r\n" );
+        char *  headerToken = strtok( clientHttpHeader, " " );
 
         int headerParseCounter = 0;
 
@@ -111,7 +86,7 @@ Rest::HandleNewConnection( ConnectionData connectionData )
             switch ( headerParseCounter )
             {
             case 0:
-                method = headerToken;
+                methodStr = headerToken;
                 break;
             case 1:
                 route = headerToken;
@@ -121,10 +96,44 @@ Rest::HandleNewConnection( ConnectionData connectionData )
             headerParseCounter++;
         }
 
-        printf( "The method is: %s\n", method );
-        printf( "The route is: %s\n", route );
+        WebServer::Method method;
 
-        // Send the HTTP response to the client
-        send(  connectionData.ClientFileDescriptor, responseBuffer, strlen( responseBuffer ), 0 );
-    }
+        if ( methodStr != nullptr && strncmp( "GET", methodStr, 4 ) == 0 )
+        {
+            method = WebServer::Method::GET;
+        }
+        else if ( methodStr != nullptr && strncmp( "POST", methodStr, 4 ) == 0 )
+        {
+            method = WebServer::Method::POST;
+        }
+        else
+        {
+            // todo Log
+            break;
+        }
+
+        auto responseData = std::string();
+
+        if ( route != nullptr && strnlen( route, 256 ) && _routes.find( route ) != _routes.end() )
+        {
+            auto routeHandler = _routes[ route ];
+
+            auto routeString = std::string( route );
+            responseData = routeHandler( restSession, routeString, method );
+            returnCode = 200;
+        }
+        else
+        {            
+            returnCode = 404;
+        }
+
+        auto headerBuilder = Algo::HeaderBuilder( returnCode );
+        headerBuilder.SetContentType( "application/json; charset=utf-8" );
+        headerBuilder.SetContentLength( responseData.length() );
+
+        auto response = headerBuilder.BuildHeader() + responseData;
+
+        send(  connectionData.ClientFileDescriptor, response.c_str(), response.length() , 0 );
+
+    } while ( n > -1 );
 }

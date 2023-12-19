@@ -17,7 +17,7 @@ namespace DutchFeud::Common::Data
 
     public:
         Session( std::string ipAddress, int clientFileDescriptor );
-
+        ~Session() override;
         const std::string & getGuid() const;
     };
     

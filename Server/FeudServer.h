@@ -21,5 +21,6 @@ namespace DutchFeud::Server
         FeudServer();
         void Start();
         WebServer::RestSession & HandleNewConnection( WebServer::ConnectionData connectionData );
+        std::string HandleTestRequest( WebServer::RestSession & restSession, std::string & response, WebServer::Method method );
     };
 }

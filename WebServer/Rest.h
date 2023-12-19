@@ -15,12 +15,12 @@ namespace DutchFeud::WebServer
     };
 
     typedef std::function < RestSession & ( ConnectionData ) > ConnectionHandler;
-    typedef std::function < void ( RestSession, std::string &, Method ) > RouteHandler;
+    typedef std::function < std::string ( RestSession &, std::string &, Method ) > RouteHandler;
 
     class Rest : public Socket
     {
     private:
-        std::optional < std::reference_wrapper< const ConnectionHandler > > _connectHandler;
+        std::optional < ConnectionHandler > _connectHandler;
         std::optional < std::reference_wrapper< const ConnectionHandler > > _disconnectHandler;
         std::unordered_map< std::string, RouteHandler > _routes;
 
@@ -32,7 +32,7 @@ namespace DutchFeud::WebServer
         void RegisterConnectHandler( ConnectionHandler handler );
         void RegisterDisconnectHandler( const ConnectionHandler & handler );
 
-        void RegisterFeudHandler( const std::string & path, RouteHandler & handler );
+        void RegisterFeudHandler( const std::string & path, RouteHandler handler );
 
 
     private:

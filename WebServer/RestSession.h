@@ -14,6 +14,8 @@ namespace DutchFeud::WebServer
 
         public:
         RestSession( std::string ipAddress, int clientFileDescriptor );
+        virtual ~RestSession();
+        const std::string & GetIpAddress() const;
 
     };
 }
