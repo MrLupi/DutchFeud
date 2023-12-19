@@ -11,4 +11,4 @@ include_directories(${common_INCLUDE_DIRS} )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} common webserver uuid)
+target_link_libraries(${PROJECT_NAME} common webserver uuid pthread )

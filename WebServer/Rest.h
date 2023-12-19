@@ -36,6 +36,7 @@ namespace DutchFeud::WebServer
 
 
     private:
-        void HandleNewConnection( ConnectionData connectionData ) override;        
+        void HandleNewConnection( ConnectionData connectionData ) override;     
+        void HandleSession( RestSession & session );
     };
 }

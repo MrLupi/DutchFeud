@@ -45,20 +45,9 @@ Rest::RegisterFeudHandler( const std::string & path, RouteHandler handler )
     _routes[ path ] = handler;
 }
 
-
-
-void
-Rest::HandleNewConnection( ConnectionData connectionData )
+void 
+Rest::HandleSession( RestSession & session )
 {
-    if ( !_connectHandler.has_value() )
-    {
-        // ToDo: Log
-        return;
-    }
-    
-    auto & connectHandler = _connectHandler.value();
-    auto & restSession = connectHandler( connectionData );
-    
     int n = 0;
     char clientBuffer[10240];
 
@@ -66,7 +55,7 @@ Rest::HandleNewConnection( ConnectionData connectionData )
     {
         int returnCode = 999;
         memset( clientBuffer, '\0', sizeof( clientBuffer ) );
-        int n = recv( connectionData.ClientFileDescriptor, clientBuffer, 10240, 0 );
+        int n = recv( session.GetClientFileDescriptor(), clientBuffer, 10240, 0 );
 
         if ( n < 1 )
         {
@@ -119,7 +108,7 @@ Rest::HandleNewConnection( ConnectionData connectionData )
             auto routeHandler = _routes[ route ];
 
             auto routeString = std::string( route );
-            responseData = routeHandler( restSession, routeString, method );
+            responseData = routeHandler( session, routeString, method );
             returnCode = 200;
         }
         else
@@ -133,7 +122,22 @@ Rest::HandleNewConnection( ConnectionData connectionData )
 
         auto response = headerBuilder.BuildHeader() + responseData;
 
-        send(  connectionData.ClientFileDescriptor, response.c_str(), response.length() , 0 );
+        send( session.GetClientFileDescriptor(), response.c_str(), response.length(), 0 );
 
     } while ( n > -1 );
+}
+
+void
+Rest::HandleNewConnection( ConnectionData connectionData )
+{
+    if ( !_connectHandler.has_value() )
+    {
+        // ToDo: Log
+        return;
+    }
+    
+    auto & connectHandler = _connectHandler.value();
+    auto & restSession = connectHandler( connectionData );
+
+    restSession.Thread = std::thread( [&]() -> void { HandleSession( restSession ); } );
 }

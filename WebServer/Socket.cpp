@@ -188,7 +188,7 @@ void Socket::Accept()
     HandleNewConnection( connectionData );
 
 
-    SetState( SocketState::Closing );
+    SetState( SocketState::Accepting );
 }
 
 void
