@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(webserver CXX)
 
-file(GLOB SOURCES 
+file(GLOB SOURCES
+    Algo/HeaderBuilder.cpp
     Socket.cpp
     ThreadPool.cpp
     Rest.cpp

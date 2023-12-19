@@ -1,7 +1,7 @@
 #include "RestSession.h"
 
 using namespace DutchFeud;
-using namespace DutchFeud::Webserver;
+using namespace DutchFeud::WebServer;
 
 RestSession::RestSession( std::string ipAddress, int clientFileDescriptor )
     : _oThread( std::nullopt )

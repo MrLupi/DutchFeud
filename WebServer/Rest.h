@@ -6,7 +6,7 @@
 #include "RestSession.h"
 #include "Socket.h"
 
-namespace DutchFeud::Webserver
+namespace DutchFeud::WebServer
 {
     enum class Method
     {

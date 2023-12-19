@@ -9,7 +9,7 @@
 
 namespace DutchFeud::Common::Data
 {
-    class Session : public Webserver::RestSession
+    class Session : public WebServer::RestSession
     {
     private:
         std::string _guid;

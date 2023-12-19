@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace DutchFeud::Webserver
+namespace DutchFeud::WebServer
 {
     struct ConnectionData
     {

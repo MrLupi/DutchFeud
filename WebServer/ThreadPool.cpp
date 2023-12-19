@@ -1,6 +1,6 @@
 #include "ThreadPool.h"
 
 using namespace DutchFeud;
-using namespace DutchFeud::Webserver;
+using namespace DutchFeud::WebServer;
 
 

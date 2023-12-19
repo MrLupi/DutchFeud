@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-namespace DutchFeud::Webserver
+namespace DutchFeud::WebServer
 {
     class ThreadPool
     {

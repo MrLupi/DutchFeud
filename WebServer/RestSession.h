@@ -3,7 +3,7 @@
 #include <optional>
 #include <thread>
 
-namespace DutchFeud::Webserver
+namespace DutchFeud::WebServer
 {
     class RestSession
     {

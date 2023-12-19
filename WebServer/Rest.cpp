@@ -12,8 +12,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include "WebServer/Algo/HeaderBuilder.h"
+
 using namespace DutchFeud;
-using namespace DutchFeud::Webserver;
+using namespace DutchFeud::WebServer;
 
 
 Rest::Rest( int port )
@@ -63,8 +65,11 @@ Rest::HandleNewConnection( ConnectionData connectionData )
     size_t contentLength = strlen( body );
 
     // Create the HTTP response header
-    char header[1024];
-    snprintf( header, sizeof( header ), "HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: %zu\r\n\r\n", contentLength );
+    auto headerBuilder = Algo::HeaderBuilder( 200 );
+    headerBuilder.SetContentType( "application/json; charset=utf-8" );
+    headerBuilder.SetContentLength( contentLength );
+    
+    auto header = headerBuilder.BuildHeader().c_str();    
 
     // Concatenate header and body to form the complete HTTP response
     char responseBuffer[10240];

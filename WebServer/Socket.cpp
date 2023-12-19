@@ -12,7 +12,7 @@
 #include <sys/socket.h>
 
 using namespace DutchFeud;
-using namespace DutchFeud::Webserver;
+using namespace DutchFeud::WebServer;
 
 std::string
 Socket::ToString( SocketState state )

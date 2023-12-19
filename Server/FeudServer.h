@@ -14,12 +14,12 @@ namespace DutchFeud::Server
         Common::Data::GameStore _gameStore;
         Common::Data::SessionStore _sessionStore;
 
-        Webserver::Rest _rest;
+        WebServer::Rest _rest;
 
 
     public:
         FeudServer();
         void Start();
-        Webserver::RestSession & HandleNewConnection( Webserver::ConnectionData connectionData );
+        WebServer::RestSession & HandleNewConnection( WebServer::ConnectionData connectionData );
     };
 }
