@@ -11,6 +11,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include "General/Algo/Logger.h"
+
 using namespace DutchFeud;
 using namespace DutchFeud::WebServer;
 
@@ -64,7 +66,12 @@ Socket::Start()
 void
 Socket::SetState( SocketState state )
 {
-    std::cout << "Changing state to " << ToString( state ) << "." << std::endl;
+    auto ss = std::stringstream();
+    ss << "Changing state to " << ToString( state ) << "." << std::endl;
+
+    auto log = General::Algo::LogManager::GetCurrentClassLogger();
+    log.Trace( ss.str() );
+    
     _socketState = state;
 }
 

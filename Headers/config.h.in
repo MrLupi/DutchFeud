@@ -1,0 +1,6 @@
+#define DutchFeudServer_VERSION_MAJOR @DutchFeud_VERSION_MAJOR@
+#define DutchFeudServer_VERSION_MINOR @DutchFeud_VERSION_MINOR@
+
+#define QU(x) #x
+#define QUH(x) QU(x)
+#define VERSION_STRING "v" QUH(DutchFeudServer_VERSION_MAJOR) "." QUH(DutchFeudServer_VERSION_MINOR)

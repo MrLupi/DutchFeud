@@ -22,5 +22,10 @@ namespace DutchFeud::Server
         void Start();
         WebServer::RestSession & HandleNewConnection( WebServer::ConnectionData connectionData );
         std::string HandleTestRequest( WebServer::RestSession & restSession, std::string & response, WebServer::Method method );
+        std::string HandleVersionRequest( WebServer::RestSession & restSession, std::string & response, WebServer::Method method );
+
+    private:
+        typedef std::string (DutchFeud::Server::FeudServer::*TESTTYPE)(DutchFeud::WebServer::RestSession &restSession, std::string &response, DutchFeud::WebServer::Method method);
+        WebServer::RouteHandler BindForRouteHandler( TESTTYPE & testType );
     };
 }

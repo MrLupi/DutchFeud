@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 3.1)
 project(server CXX)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
 
-file(GLOB SOURCES main.cpp FeudServer.cpp)
+file(GLOB SOURCES 
+    Algo/GetServerVersion.cpp
+    main.cpp 
+    FeudServer.cpp)
 
 #add_definitions(${_DEFINITIONS})
 
