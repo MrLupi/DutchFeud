@@ -32,7 +32,6 @@ Rest::RegisterConnectHandler( ConnectionHandler handler )
     _connectHandler = handler;
 }
 
-
 void
 Rest::RegisterDisconnectHandler( const ConnectionHandler & handler )
 {
@@ -49,13 +48,12 @@ void
 Rest::HandleSession( RestSession & session )
 {
     int n = 0;
-    char clientBuffer[10240];
+    char clientBuffer[ BUFFER_SIZE ];
 
     do
     {
-        int returnCode = 999;
         memset( clientBuffer, '\0', sizeof( clientBuffer ) );
-        int n = recv( session.GetClientFileDescriptor(), clientBuffer, 10240, 0 );
+        int n = recv( session.GetClientFileDescriptor(), clientBuffer, sizeof ( clientBuffer ), 0 );
 
         if ( n < 1 )
         {
@@ -63,10 +61,10 @@ Rest::HandleSession( RestSession & session )
             break;            
         }
 
-        char *  methodStr = nullptr;
-        char *  route = nullptr;
-        char *  clientHttpHeader = strtok( clientBuffer, "\r\n" );
-        char *  headerToken = strtok( clientHttpHeader, " " );
+        char * methodStr = nullptr;
+        char * route = nullptr;
+        char * clientHttpHeader = strtok( clientBuffer, "\r\n" );
+        char * headerToken = strtok( clientHttpHeader, " " );
 
         int headerParseCounter = 0;
 
@@ -103,6 +101,7 @@ Rest::HandleSession( RestSession & session )
 
         auto responseData = std::string();
 
+        int returnCode;
         if ( route != nullptr && strnlen( route, 256 ) && _routes.find( route ) != _routes.end() )
         {
             auto routeHandler = _routes[ route ];

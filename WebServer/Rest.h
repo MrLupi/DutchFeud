@@ -20,6 +20,7 @@ namespace DutchFeud::WebServer
     class Rest : public Socket
     {
     private:
+        const int BUFFER_SIZE = 10240;
         std::optional < ConnectionHandler > _connectHandler;
         std::optional < std::reference_wrapper< const ConnectionHandler > > _disconnectHandler;
         std::unordered_map< std::string, RouteHandler > _routes;
