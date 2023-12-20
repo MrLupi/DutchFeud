@@ -47,7 +47,8 @@ Rest::RegisterFeudHandler( const std::string & path, RouteHandler handler )
 void 
 Rest::HandleSession( RestSession & session )
 {
-    std::cout << "Connection established to '" << session.GetIpAddress() << "'" << std::endl;
+    _log.Debug ( "Connection established with '" + session.GetIpAddress() + "'" );
+
     int n = 0;
     char clientBuffer[ BUFFER_SIZE ];
 
@@ -125,7 +126,7 @@ Rest::HandleSession( RestSession & session )
         send( session.GetClientFileDescriptor(), response.c_str(), response.length(), 0 );
 
     } while ( n > -1 );
-    std::cout << "Connection ended for '" << session.GetIpAddress() << "'" << std::endl;
+    _log.Debug( "Connection ended for '" + session.GetIpAddress() + "'" );
 
 
 }
