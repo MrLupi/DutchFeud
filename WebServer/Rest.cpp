@@ -55,7 +55,7 @@ Rest::HandleSession( RestSession & session )
     do
     {
         memset( clientBuffer, '\0', sizeof( clientBuffer ) );
-        int n = recv( session.GetClientFileDescriptor(), clientBuffer, sizeof ( clientBuffer ), 0 );
+        int n = SSL_read( session.GetSSLDescriptor(), clientBuffer, sizeof( clientBuffer ) );
 
         if ( n < 1 )
         {
@@ -123,7 +123,7 @@ Rest::HandleSession( RestSession & session )
 
         auto response = headerBuilder.BuildHeader() + responseData;
 
-        send( session.GetClientFileDescriptor(), response.c_str(), response.length(), 0 );
+        SSL_write( session.GetSSLDescriptor(), response.c_str(), response.length() );
 
     } while ( n > -1 );
     _log.Debug( "Connection ended for '" + session.GetIpAddress() + "'" );

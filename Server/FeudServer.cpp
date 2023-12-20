@@ -21,7 +21,7 @@ FeudServer::FeudServer()
 WebServer::RestSession &
 FeudServer::HandleNewConnection( WebServer::ConnectionData connectionData )
 {
-    auto session = std::make_shared< Common::Data::Session >( connectionData.Host, connectionData.ClientFileDescriptor );
+    auto session = std::make_shared< Common::Data::Session >( connectionData.Host, connectionData.ClientFileDescriptor, connectionData.Ssl );
     _sessionStore.AddSession( session );
 
     return * session;

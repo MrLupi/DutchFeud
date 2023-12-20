@@ -2,6 +2,9 @@
 
 #include <string>
 
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 #include "General/Algo/Logger.h"
 
 namespace DutchFeud::WebServer
@@ -10,6 +13,7 @@ namespace DutchFeud::WebServer
     {
         int ClientFileDescriptor;
         std::string Host;
+        SSL * Ssl;
     };
 
     class Socket
@@ -38,6 +42,7 @@ namespace DutchFeud::WebServer
 
         protected:
         static General::Algo::Logger _log;
+        SSL_CTX * _sslContext;
         
         public:
         Socket( int port );

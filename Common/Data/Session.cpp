@@ -7,8 +7,8 @@ using namespace DutchFeud::Common;
 using namespace DutchFeud::Common::Data;
 
 
-Session::Session( std::string ipAddress, int clientFileDescriptor )
-    : RestSession( ipAddress, clientFileDescriptor )
+Session::Session( std::string ipAddress, int clientFileDescriptor, SSL * sslDescriptor )
+    : RestSession( ipAddress, clientFileDescriptor, sslDescriptor )
     , _oPlayer( std::nullopt )
 {
     _guid = Algo::GenerateRandomGuid()();

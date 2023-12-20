@@ -16,7 +16,7 @@ namespace DutchFeud::Common::Data
         std::optional< std::reference_wrapper< Player > > _oPlayer;
 
     public:
-        Session( std::string ipAddress, int clientFileDescriptor );
+        Session( std::string ipAddress, int clientFileDescriptor, SSL * sslDescriptor );
         ~Session() override;
         const std::string & getGuid() const;
     };

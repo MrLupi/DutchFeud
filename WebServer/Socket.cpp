@@ -1,5 +1,6 @@
 #include "Socket.h"
 
+#include <cassert>
 #include <cerrno>
 #include <cstring>
 #include <iostream>
@@ -53,6 +54,27 @@ Socket::Socket( int port )
     , _port( port )
     , _errorMessage()
 {
+    SSL_library_init();
+    SSL_load_error_strings();
+
+    _sslContext = SSL_CTX_new( SSLv23_server_method() );
+    if ( !_sslContext )
+    {
+        _log.Fatal( "Could not create SSL context" );
+        assert( false );
+    }
+
+    if ( SSL_CTX_use_certificate_file( _sslContext, "example.crt", SSL_FILETYPE_PEM ) <= 0 )
+    {
+        _log.Fatal( "Could not read SSL server certificate file 'server.crt'." );
+        assert( false );
+    }
+
+    if ( SSL_CTX_use_PrivateKey_file( _sslContext, "example.key", SSL_FILETYPE_PEM ) <= 0 )
+    {
+        _log.Fatal( "Could not read SSL server certificate file 'server.key'." );
+        assert( false );
+    }
 }
 
 void
@@ -118,7 +140,7 @@ Socket::HandleState()
 void
 Socket::Initialize()
 {
-    int fd = socket( AF_INET, SOCK_STREAM, 0 ); // ToDo: Check out SOCK_NONBLOCK ??
+    int fd = socket( AF_INET, SOCK_STREAM, 0 ); 
     if ( fd < 0 )
     {
         SetErrorState( "Could not create socket" );
@@ -142,6 +164,7 @@ Socket::Initialize()
         SetErrorState( "Could not bind." );
         return;
     }
+
     SetState( SocketState::Listening );
 }
 
@@ -162,10 +185,12 @@ Socket::Listen()
         SetErrorState( "Could not listen" );
         return;
     }
+
     SetState( SocketState::Accepting );
 }
 
-void Socket::Accept()
+void
+Socket::Accept()
 {
     int clientFileDescriptor;
     struct sockaddr_in clientaddress;
@@ -177,8 +202,19 @@ void Socket::Accept()
         SetErrorState( "Could not accept connection" );
         return;
     }
+    
+    auto ssl = SSL_new( _sslContext );
+    
+    SSL_set_fd( ssl, clientFileDescriptor );
 
-    struct sockaddr_in* pV4Addr = (struct sockaddr_in*) & clientaddress;
+    if ( SSL_accept( ssl ) <= 0 )
+    {
+        _log.Error("SSL handshake failed");
+        SetState( SocketState::Accepting );
+        return;
+    }
+
+    struct sockaddr_in * pV4Addr = (struct sockaddr_in *) & clientaddress;
     struct in_addr ipAddr = pV4Addr->sin_addr;
     
     char ipAddress[INET_ADDRSTRLEN];
@@ -188,9 +224,12 @@ void Socket::Accept()
     auto connectionData = ConnectionData();
     connectionData.ClientFileDescriptor = clientFileDescriptor;
     connectionData.Host = ipAddress;
+    connectionData.Ssl = ssl;
 
     HandleNewConnection( connectionData );
 
+    SSL_shutdown( ssl );
+    SSL_free( ssl );
 
     SetState( SocketState::Accepting );
 }
@@ -209,5 +248,10 @@ Socket::CleanUp()
     {
         close( _serverFileDescriptor );
         _serverFileDescriptor = 0;
+    }
+
+    if ( _sslContext )
+    {
+        SSL_CTX_free( _sslContext );
     }
 }
