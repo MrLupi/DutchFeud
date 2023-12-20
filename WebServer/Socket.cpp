@@ -11,8 +11,12 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include "General/Algo/Logger.h"
+
 using namespace DutchFeud;
-using namespace DutchFeud::Webserver;
+using namespace DutchFeud::WebServer;
+
+General::Algo::Logger Socket::_log = General::Algo::LogManager::GetCurrentClassLogger();
 
 std::string
 Socket::ToString( SocketState state )
@@ -47,7 +51,7 @@ Socket::Socket( int port )
     : _serverFileDescriptor( 0 )
     , _socketState( SocketState::Uninitialized )
     , _port( port )
-    , _statusMessage()
+    , _errorMessage()
 {
 }
 
@@ -62,15 +66,9 @@ Socket::Start()
 }
 
 void
-Socket::PrintInfo()
-{
-    std::cout << "Hello, World" << std::endl;
-}
-
-void
 Socket::SetState( SocketState state )
 {
-    std::cout << "Changing state to " << ToString( state ) << "." << std::endl;
+    _log.Trace( "Changing state to " + ToString( state ) + "." );    
     _socketState = state;
 }
 
@@ -85,7 +83,7 @@ Socket::SetErrorState( std::string message )
         stream << " ( " << std::string ( std::strerror( errno ) ) << " )";
     }
 
-    _statusMessage = stream.str();
+    _errorMessage = stream.str();
     SetState( SocketState::InError );
 }
 
@@ -150,7 +148,7 @@ Socket::Initialize()
 void
 Socket::Error()
 {
-    std::cerr << _statusMessage << std::endl;
+    _log.Error( _errorMessage );
     SetState( SocketState::Closing );
 }
 
@@ -167,43 +165,34 @@ Socket::Listen()
     SetState( SocketState::Accepting );
 }
 
-void
-Socket::Accept()
+void Socket::Accept()
 {
     int clientFileDescriptor;
     struct sockaddr_in clientaddress;
-    socklen_t clientAddresSize = sizeof ( clientaddress );
+    socklen_t clientAddresSize = sizeof( clientaddress );
 
-    clientFileDescriptor = accept( _serverFileDescriptor, (struct sockaddr*) & clientaddress, & clientAddresSize );
+    clientFileDescriptor = accept( _serverFileDescriptor, ( struct sockaddr * ) & clientaddress, & clientAddresSize );
     if ( clientFileDescriptor < 0 )
     {
         SetErrorState( "Could not accept connection" );
         return;
     }
-    const char* content = "HTTP/1.1 200 OK\r\n"
-                              "Content-Type: text/html\r\n"
-                              "Cache-Control: no-cache\r\n"
-                              "Connection: keep-alive\r\n"
-                              "TESTTESTTESTTETSTETTTEST\r\n"
-                                "<html>"
-                               "<head><title>Welcome to DutchFeud!</title></head>"
-                               "<body>"
-                               "</body>"
-                               "</html>\r\n\r\n";
 
-    char buffer[ 10240 ];
-    memset( buffer, '\0', sizeof ( buffer ) );         
-    int n = recv ( clientFileDescriptor, buffer, sizeof ( buffer, 0 ), 0 );
+    struct sockaddr_in* pV4Addr = (struct sockaddr_in*) & clientaddress;
+    struct in_addr ipAddr = pV4Addr->sin_addr;
+    
+    char ipAddress[INET_ADDRSTRLEN];
+    
+    inet_ntop( AF_INET, &ipAddr, ipAddress, INET_ADDRSTRLEN );
+    
+    auto connectionData = ConnectionData();
+    connectionData.ClientFileDescriptor = clientFileDescriptor;
+    connectionData.Host = ipAddress;
 
-    if ( n > 1 )
-    {
-        send ( clientFileDescriptor, content, strlen( content ), 0 );
-    }
-    memset( buffer, '\0', sizeof ( buffer ) );         
-    n = recv ( clientFileDescriptor, buffer, sizeof ( buffer, 0 ), 0 );
-    sleep( 2 );
+    HandleNewConnection( connectionData );
 
-    SetState( SocketState::Closing );
+
+    SetState( SocketState::Accepting );
 }
 
 void

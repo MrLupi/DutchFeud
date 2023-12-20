@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(common CXX)
 
-file(GLOB SOURCES 
+file(GLOB SOURCES
+    Algo/GenerateRandomGuid.cpp
     Data/Game.cpp
     Data/GameStore.cpp
     Data/Move.cpp
@@ -12,6 +13,8 @@ file(GLOB SOURCES
     Data/PlayField.cpp
     Data/PlayFieldLocation.cpp
     Data/PlayFieldSquare.cpp
+    Data/Session.cpp
+    Data/SessionStore.cpp
     Data/Tile.cpp
     Data/TilesCollection.cpp
 )

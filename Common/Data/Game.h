@@ -3,12 +3,10 @@
 #include <cinttypes>
 #include <functional>
 #include <mutex>
-#include <uuid/uuid.h>
 
 #include "Common/Data/PlayField.h"
 #include "Common/Data/Player.h"
 #include "Common/Data/TilesCollection.h"
-
 
 namespace DutchFeud::Common::Data
 {

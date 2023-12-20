@@ -1,5 +1,6 @@
 #include "Game.h"
 
+#include "Common/Algo/GenerateRandomGuid.h"
 
 using namespace DutchFeud;
 using namespace DutchFeud::Common;
@@ -34,11 +35,7 @@ Game::SetRandomTurn()
 void
 Game::SetRandomGuid()
 {
-    char uuidString[UUID_STR_LEN];
-    uuid_t uuid;
-    uuid_generate_random( uuid );
-    uuid_unparse_lower( uuid, uuidString );
-    _guid = std::string( uuidString );    
+    _guid = Algo::GenerateRandomGuid()();
 }
 
 void 
