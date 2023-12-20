@@ -5,7 +5,6 @@ project(webserver CXX)
 file(GLOB SOURCES
     Algo/HeaderBuilder.cpp
     Socket.cpp
-    ThreadPool.cpp
     Rest.cpp
     RestSession.cpp
 )
