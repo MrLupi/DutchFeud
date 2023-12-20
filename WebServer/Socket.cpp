@@ -16,6 +16,8 @@
 using namespace DutchFeud;
 using namespace DutchFeud::WebServer;
 
+General::Algo::Logger Socket::_log = General::Algo::LogManager::GetCurrentClassLogger();
+
 std::string
 Socket::ToString( SocketState state )
 {
@@ -49,7 +51,7 @@ Socket::Socket( int port )
     : _serverFileDescriptor( 0 )
     , _socketState( SocketState::Uninitialized )
     , _port( port )
-    , _statusMessage()
+    , _errorMessage()
 {
 }
 
@@ -66,12 +68,7 @@ Socket::Start()
 void
 Socket::SetState( SocketState state )
 {
-    auto ss = std::stringstream();
-    ss << "Changing state to " << ToString( state ) << "." << std::endl;
-
-    auto log = General::Algo::LogManager::GetCurrentClassLogger();
-    log.Trace( ss.str() );
-    
+    _log.Trace( "Changing state to " + ToString( state ) + "." );    
     _socketState = state;
 }
 
@@ -86,7 +83,7 @@ Socket::SetErrorState( std::string message )
         stream << " ( " << std::string ( std::strerror( errno ) ) << " )";
     }
 
-    _statusMessage = stream.str();
+    _errorMessage = stream.str();
     SetState( SocketState::InError );
 }
 
@@ -151,7 +148,7 @@ Socket::Initialize()
 void
 Socket::Error()
 {
-    std::cerr << _statusMessage << std::endl;
+    _log.Error( _errorMessage );
     SetState( SocketState::Closing );
 }
 

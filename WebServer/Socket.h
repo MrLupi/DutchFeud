@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "General/Algo/Logger.h"
+
 namespace DutchFeud::WebServer
 {
     struct ConnectionData
@@ -32,7 +34,10 @@ namespace DutchFeud::WebServer
         int _serverFileDescriptor;
         SocketState _socketState;
         int _port;
-        std::string _statusMessage;
+        std::string _errorMessage;
+
+        protected:
+        static General::Algo::Logger _log;
         
         public:
         Socket( int port );
