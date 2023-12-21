@@ -39,5 +39,6 @@ namespace DutchFeud::WebServer
     private:
         void HandleNewConnection( ConnectionData connectionData ) override;     
         void HandleSession( RestSession & session );
+        bool ValidateMessageLength( size_t messageLength, size_t messageAllocatedSize ) const;
     };
 }

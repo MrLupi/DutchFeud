@@ -44,6 +44,18 @@ Logger::Fatal( const std::string & message )
 }
 
 void 
+Logger::Info( const char * message )
+{
+    Log( LogLevel::Info, message );
+}
+
+void 
+Logger::Info( const std::string & message )
+{
+    Log( LogLevel::Info, message );
+}
+
+void 
 Logger::Trace( const char * message )
 {
     Log( LogLevel::Trace, message );

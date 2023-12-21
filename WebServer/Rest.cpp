@@ -49,19 +49,19 @@ Rest::HandleSession( RestSession & session )
 {
     _log.Debug ( "Connection established with '" + session.GetIpAddress() + "'" );
 
-    int n = 0;
     char clientBuffer[ BUFFER_SIZE ];
+    const auto clientBufferSize = sizeof ( clientBuffer );
+
+    int messageLength;
 
     do
-    {
-        memset( clientBuffer, '\0', sizeof( clientBuffer ) );
-        int n = SSL_read( session.GetSSLDescriptor(), clientBuffer, sizeof( clientBuffer ) );
+    {   
+        messageLength = 0; 
+        memset( clientBuffer, '\0', clientBufferSize );
 
-        if ( n < 1 )
-        {
-            // todo: log state
-            break;            
-        }
+        messageLength = SSL_read( session.GetSSLDescriptor(), clientBuffer, clientBufferSize );
+
+        ValidateMessageLength( messageLength, clientBufferSize );
 
         char * methodStr = nullptr;
         char * route = nullptr;
@@ -125,10 +125,10 @@ Rest::HandleSession( RestSession & session )
 
         SSL_write( session.GetSSLDescriptor(), response.c_str(), response.length() );
 
-    } while ( n > -1 );
+    }
+    while ( messageLength > 0 );
+    
     _log.Debug( "Connection ended for '" + session.GetIpAddress() + "'" );
-
-
 }
 
 void
@@ -144,4 +144,37 @@ Rest::HandleNewConnection( ConnectionData connectionData )
     auto & restSession = connectHandler( connectionData );
 
     restSession.Thread = std::thread( [&]() -> void { HandleSession( restSession ); } );
+}
+
+bool
+Rest::ValidateMessageLength( size_t messageLength, size_t messageAllocatedSize ) const
+{
+    if ( messageLength < 0 )
+    {             
+        _log.Error( "While receiving: '" + std::string ( std::strerror( errno ) ) + "'" );
+        return false;            
+    }
+
+    if ( messageLength == 0 )
+    {
+        _log.Info( "Client has performed an orderly shutdown" );
+        return false;
+    }
+
+    if ( messageLength > messageAllocatedSize )
+    {
+        _log.Error( "Client sent message beyond buffer size" );
+        return false;
+    }
+
+    const int REST_MAXIMUM_MESSAGE_SIZE = 1024;
+    if ( messageLength > REST_MAXIMUM_MESSAGE_SIZE )
+    {
+        auto message = std::stringstream();
+        message << "Not expecting messages to exceed '" << REST_MAXIMUM_MESSAGE_SIZE << "' bytes. Current message size is '" << messageLength << "'bytes. Terminating connection";
+        _log.Error( message.str() ); 
+        return false;
+    }
+
+    return true;
 }

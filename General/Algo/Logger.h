@@ -26,6 +26,8 @@ namespace DutchFeud::General::Algo
         void Error( const std::string & message );
         void Fatal( const char * message );
         void Fatal( const std::string & message );
+        void Info( const char * message );
+        void Info( const std::string & message );
         void Trace( const char * message );
         void Trace( const std::string & message );
         void Warning( const char * message );
